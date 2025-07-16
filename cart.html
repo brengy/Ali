@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cart</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <h1>My Cart</h1>
+    </div>
+  </header>
+
+  <div class="container gallery-grid" id="cart-items"></div>
+
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartContainer = document.getElementById('cart-items');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    const storedCart = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+    // Render cart items
+    if (storedCart.length === 0) {
+      cartContainer.innerHTML = "<p style='color: var(--gray); font-size: 1rem;'>Your cart is empty.</p>";
+    } else {
+      storedCart.forEach(item => {
+        const html = `
+          <div class="gallery-item">
+            <img src="${item.img}" alt="${item.title}">
+            <div class="item-overlay">
+              <h3>${item.title}</h3>
+              <button class="view-btn" onclick="removeItem('${item.img}')">احذف</button>
+            </div>
+          </div>
+        `;
+        cartContainer.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    // WhatsApp button click
+    if (whatsappBtn) {
+      whatsappBtn.addEventListener('click', function (e) {
+        if (storedCart.length === 0) {
+          alert("Cart is empty.");
+          e.preventDefault();
+          return;
+        }
+
+        const namesOnly = storedCart.map((item, i) =>
+          `${i + 1}. ${item.title}`
+        ).join('\n');
+
+        const message = encodeURIComponent(`سلام عليكم , لو سمحت أريد :\n\n${namesOnly}`);
+        const phoneNumber = '201018688494';
+        const waLink = `https://wa.me/${phoneNumber}?text=${message}`;
+
+        this.href = waLink;
+      });
+    }
+  });
+
+  // removeItem must stay global for inline `onclick`
+  function removeItem(img) {
+  let cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+  cart = cart.filter(item => item.img !== img);
+  localStorage.setItem('cartItems', JSON.stringify(cart));
+  location.reload(); // refresh the cart UI
+}
+
+</script>
+
+  
+  <a href="#" id="whatsapp-btn" class="whatsapp-btn" title="">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<a href="tel:+201018688494" id="call-btn" class="call-btn" title="Call Now">
+  <i class="fas fa-phone-alt"></i>
+</a>
+
+
+</body>
+</html>
